@@ -99,6 +99,7 @@
                             {'invisible':['|',('state','not in', ['draft', 'sent']),('cancel_quot_ok','=',False)]}
                         </attribute>
                         <attribute name="states"/>
+                        <attribute name="groups"/>
                     </xpath>
 
                     <xpath expr="//button[@name='action_cancel']" position="attributes">
