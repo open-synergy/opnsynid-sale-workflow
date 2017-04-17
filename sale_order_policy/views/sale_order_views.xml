@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="sale_order_view_form" model="ir.ui.view">
+            <field name="name">Sale Order Form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//notebook" position="inside">
+                        <page name="page_sale_order_policy" string="Policy" groups="base.group_system">
+                            <group name="grp_policy_sale_order">
+                                <field name="invoice_recreate_ok"/>
+                                <field name="invoice_corrected_ok"/>
+                                <field name="quotation_send_ok"/>
+                                <field name="confirm_order_ok"/>
+                                <field name="view_invoice_ok"/>
+                                <field name="create_invoice_ok"/>
+                                <field name="copy_quotation_ok"/>
+                                <field name="cancel_quot_ok"/>
+                                <field name="cancel_order_ok"/>
+                            </group>
+                        </page>
+                    </xpath>
+
+                    <xpath expr="//button[@name='invoice_recreate']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','!=','invoice_except'),('invoice_recreate_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='invoice_corrected']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','!=','invoice_except'),('invoice_corrected_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='action_quotation_send'][1]" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','!=','draft'),('quotation_send_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='action_quotation_send'][2]" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','not in', ['sent', 'progress', 'manual']),('quotation_send_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='action_button_confirm'][1]" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','!=','draft'),('confirm_order_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='action_button_confirm'][2]" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','!=','sent'),('confirm_order_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='action_view_invoice']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|', ('invoice_exists', '=', False),('view_invoice_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','!=','manual'),('create_invoice_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='copy_quotation']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','!=','cancel'),('copy_quotation_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='cancel']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','not in', ['draft', 'sent']),('cancel_quot_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='action_cancel']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible': ['|', ('state','not in', ['manual', 'progress']),('cancel_order_ok', '=', False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='invoice_cancel']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible': ['|', ('state','!=','invoice_except'),('cancel_order_ok', '=', False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                        <attribute name="groups"/>
+                    </xpath>
+
+                </data>
+            </field>
+        </record>
+    </data>
+</openerp>
