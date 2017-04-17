@@ -94,6 +94,13 @@
                         <attribute name="states"/>
                     </xpath>
 
+                    <xpath expr="//button[@name='cancel']" position="attributes">
+                        <attribute name="attrs">
+                            {'invisible':['|',('state','not in', ['draft', 'sent']),('cancel_quot_ok','=',False)]}
+                        </attribute>
+                        <attribute name="states"/>
+                    </xpath>
+
                     <xpath expr="//button[@name='action_cancel']" position="attributes">
                         <attribute name="attrs">
                             {'invisible': ['|', ('state','not in', ['manual', 'progress']),('cancel_order_ok', '=', False)]}

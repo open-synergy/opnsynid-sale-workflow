@@ -22,9 +22,10 @@ class SaleOrder(models.Model):
         "type_id.cancel_order_group_ids"
     )
     def _compute_policy(self):
-        obj_sale_order_type = self.env["sale.order.type"]
+        user_id = self.env.user.id
         for sale_order in self:
-            if self.env.user.id == SUPERUSER_ID:
+            order_type = sale_order.type_id
+            if user_id == SUPERUSER_ID or not order_type:
                 sale_order.invoice_recreate_ok = True
                 sale_order.invoice_corrected_ok = True
                 sale_order.quotation_send_ok = True
@@ -36,22 +37,6 @@ class SaleOrder(models.Model):
                 sale_order.cancel_order_ok = True
                 continue
 
-            order_type_id = sale_order.type_id.id
-
-            if not order_type_id:
-                sale_order.invoice_recreate_ok = True
-                sale_order.invoice_corrected_ok = True
-                sale_order.quotation_send_ok = True
-                sale_order.confirm_order_ok = True
-                sale_order.view_invoice_ok = True
-                sale_order.create_invoice_ok = True
-                sale_order.copy_quotation_ok = True
-                sale_order.cancel_quot_ok = True
-                sale_order.cancel_order_ok = True
-                continue
-
-            order_type =\
-                obj_sale_order_type.browse([order_type_id])[0]
             sale_order.invoice_recreate_ok =\
                 self._button_policy(order_type, 'invoice_recreate')
             sale_order.invoice_corrected_ok =\
@@ -73,9 +58,9 @@ class SaleOrder(models.Model):
 
     @api.model
     def _button_policy(self, order_type, button_type):
-        result = False
         user = self.env.user
         group_ids = user.groups_id.ids
+        button_group_ids = []
 
         if button_type == 'invoice_recreate':
             button_group_ids = order_type.invoice_recreate_group_ids.ids
@@ -96,11 +81,13 @@ class SaleOrder(models.Model):
         elif button_type == 'cancel_order':
             button_group_ids = order_type.cancel_order_group_ids.ids
 
-        if not button_group_ids:
-            result = True
-        else:
+        if button_group_ids:
             if (set(button_group_ids) & set(group_ids)):
                 result = True
+            else:
+                result = False
+        else:
+            result = True
         return result
 
     invoice_recreate_ok = fields.Boolean(
