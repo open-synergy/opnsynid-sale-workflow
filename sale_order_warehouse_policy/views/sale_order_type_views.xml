@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<record id="sale_order_type_view_form" model="ir.ui.view">
+    <field name="name">Sale Order Type Warehouse Policy</field>
+    <field name="model">sale.order.type</field>
+    <field name="inherit_id" ref="sale_order_type.sot_sale_order_type_form_view"/>
+    <field name="arch" type="xml">
+        <xpath expr="//sheet/group[2]" position="after">
+            <group name="grp_warehouse_policy" colspan="4" col="2" string="Warehouse Policy">
+                <field name="limit_warehouse_selection"/>
+                <label for="allowed_waehouse_ids" colspan="2"/>
+                <field name="allowed_warehouse_ids" nolabel="1" colspan="2"/>
+            </group>
+        </xpath>
+    </field>
+</record>
+</data>
+</openerp>
