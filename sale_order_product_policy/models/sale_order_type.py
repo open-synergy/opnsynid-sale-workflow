@@ -38,7 +38,7 @@ class SaleOrderType(models.Model):
         string="Allowed Product",
         comodel_name="product.product",
         domain=[("sale_ok", "=", True)],
-        relation="rel_po_type_2_product",
+        relation="rel_so_type_2_product",
         col1="type_id",
         col2="product_id",
     )
