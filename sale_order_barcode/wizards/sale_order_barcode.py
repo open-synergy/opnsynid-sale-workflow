@@ -46,7 +46,6 @@ class SaleOrderBarcode(models.TransientModel):
                         'the right product manually.')}}
 
     def create_sale_order_line(self):
-        obj_sale_order = self.env['sale.order']
         obj_sale_order_line = self.env['sale.order.line']
         active_id = self._context['active_id']
 
