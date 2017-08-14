@@ -19,9 +19,7 @@ class SaleOrderBarcode(models.TransientModel):
     def product_barcode_change(self):
         if self.product_barcode:
             products = self.env['product.product'].search([
-                '|',
-                ('ean13', '=', self.product_barcode),
-                ('default_code', '=ilike', self.product_barcode)])
+                ('ean13', '=', self.product_barcode)])
             if len(products) == 1:
                 self.product_id = products[0]
                 self.create_sale_order_line()
