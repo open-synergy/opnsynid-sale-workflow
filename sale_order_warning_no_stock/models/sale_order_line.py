@@ -22,6 +22,7 @@ class SaleOrderLine(models.Model):
             fiscal_position=fiscal_position, flag=flag,
             warehouse_id=warehouse_id)
         if 'warning' in res:
-            if u'Not enough stock' in res['warning']['message']:
-                res.update({'warning': {}})
+            if 'message' in res['warning']:
+                if u'Not enough stock' in res['warning']['message']:
+                    res.update({'warning': {}})
         return res
