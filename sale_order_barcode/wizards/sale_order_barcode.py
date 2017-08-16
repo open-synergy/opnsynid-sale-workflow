@@ -15,11 +15,21 @@ class SaleOrderBarcode(models.TransientModel):
     product_id = fields.Many2one(
         'product.product', string='Product', required=True)
 
+    @api.multi
+    def _prepare_domain(self):
+        self.ensure_one()
+        domain = [
+            ('ean13', '=', self.product_barcode),
+            ('sale_ok', '=', True)
+        ]
+        return domain
+
     @api.onchange('product_barcode')
     def product_barcode_change(self):
+        obj_product = self.env['product.product']
         if self.product_barcode:
-            products = self.env['product.product'].search([
-                ('ean13', '=', self.product_barcode)])
+            domain = self._prepare_domain()
+            products = obj_product.search(domain)
             if len(products) == 1:
                 self.product_id = products[0]
                 self.create_sale_order_line()
@@ -40,10 +50,12 @@ class SaleOrderBarcode(models.TransientModel):
                     'title': _('Error'),
                     'message': _(
                         'No product found with this code as '
-                        'EAN13 nor Internal Reference. You should select '
+                        'EAN13 or product is not for sale. You should select '
                         'the right product manually.')}}
 
+    @api.multi
     def create_sale_order_line(self):
+        self.ensure_one()
         obj_sale_order_line = self.env['sale.order.line']
         active_id = self._context['active_id']
 
