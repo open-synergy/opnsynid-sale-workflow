@@ -34,7 +34,7 @@ class TestOnchangeProductBarcode(TransactionCase):
         res = new.product_barcode_change()
         self.assertEquals(
             'No product found with this code as '
-            'EAN13 nor Internal Reference. You should select '
+            'EAN13 or product is not for sale. You should select '
             'the right product manually.',
             res['warning']['message']
         )
