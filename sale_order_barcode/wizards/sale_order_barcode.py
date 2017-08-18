@@ -25,13 +25,15 @@ class SaleOrderBarcode(models.TransientModel):
         comodel_name='product.uom',
         string='Unit of Measure',
         required=True)
-    type = fields.Selection([
-            ('insert','Insert'),
-            ('update','Update'),
+    type = fields.Selection(
+        [
+            ('insert', 'Insert'),
+            ('update', 'Update'),
         ],
         string='Type',
         required=True,
-        default=lambda self: self._context.get('type', 'insert'))
+        default=lambda self: self._context.get('type', 'insert')
+    )
 
     @api.multi
     def _prepare_domain(self):
@@ -109,7 +111,7 @@ class SaleOrderBarcode(models.TransientModel):
 
         if lines:
             check_uom = self._check_uom(lines)
-            if check_uom == True:
+            if check_uom is True:
                 product_qty = self.product_qty
             else:
                 product_qty = self._convert_uom(
