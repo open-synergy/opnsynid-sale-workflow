@@ -9,10 +9,19 @@
                 <form string="Sale Order Barcode Wizard">
                     <group name="product">
                         <field name="product_barcode"/>
-                        <field name="product_id" invisible="1"/>
+                        <field name="product_id" options='{"no_open": True}'/>
+                        <label for="product_qty"/>
+                        <div>
+                            <field name="product_qty" class="oe_inline"/>
+                            <field name="product_uom_id" options='{"no_open": True}' class="oe_inline"/>
+                        </div>
+                        <field name="type"/>
                     </group>
                     <footer>
-                        <button special="cancel" string="Ok" class="oe_link"/>
+                        <button name="save" type="object"
+                            class="oe_highlight" string="Save"/>
+                            or
+                        <button special="cancel" string="Cancel" class="oe_link"/>
                     </footer>
                 </form>
             </field>
