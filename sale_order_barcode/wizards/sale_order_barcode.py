@@ -4,6 +4,7 @@
 
 from openerp import models, fields, api, _
 import openerp.addons.decimal_precision as dp
+from openerp.exceptions import Warning as UserError
 
 
 class SaleOrderBarcode(models.TransientModel):
@@ -109,7 +110,7 @@ class SaleOrderBarcode(models.TransientModel):
             ('product_id', '=', self.product_id.id),
         ])
 
-        if lines:
+        if len(lines) == 1:
             check_uom = self._check_uom(lines)
             if check_uom is True:
                 product_qty = self.product_qty
@@ -122,11 +123,14 @@ class SaleOrderBarcode(models.TransientModel):
                 lines.write({
                     'product_uom_qty': lines.product_uom_qty + product_qty
                 })
-            if self.type == 'update':
+            elif self.type == 'update':
                 lines.write({
                     'product_uom_qty': product_qty
                 })
-        else:
+        elif len(lines) > 1:
+            raise UserError(_("More than 1 line found"))
+
+        elif len(lines) == 0:
             obj_sale_order_line.create({
                 'order_id': active_id,
                 'product_id': self.product_id.id,
