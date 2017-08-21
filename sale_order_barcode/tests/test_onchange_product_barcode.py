@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp.tests.common import TransactionCase
+from openerp.exceptions import Warning as UserError
 
 
 class TestOnchangeProductBarcode(TransactionCase):
@@ -57,6 +58,41 @@ class TestOnchangeProductBarcode(TransactionCase):
         self.assertIsNotNone(
             res['warning']['message']
         )
+
+    def test_error_more_than_1_line(self):
+        order_line = [
+            (0, 0, {
+                'product_id': self.product_1.id,
+                'product_uom_qty': 5,
+                }),
+            (0, 0, {
+                'product_id': self.product_1.id,
+                'product_uom_qty': 1,
+                }),
+        ]
+
+        self.data_so.update({
+            'order_line': order_line
+        })
+
+        new = self.wiz.with_context(
+            active_model="sale.order",
+            active_id=self.data_so.id
+        ).new()
+
+        self.product_1.ean13 = 8998989300155
+
+        new.product_barcode = 8998989300155
+        new.product_barcode_onchange()
+        new.product_id_onchange()
+        new.product_qty = 20.0
+
+        msg = ("More than 1 line found")
+
+        with self.assertRaises(UserError) as error:
+            new.save()
+
+        self.assertEqual(error.exception.message, msg)
 
     def test_product_barcode_condition_1(self):
         # CONDITION
