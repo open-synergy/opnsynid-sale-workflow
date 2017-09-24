@@ -11,7 +11,7 @@ class SaleOrderType(models.Model):
     @api.depends(
         "allowed_product_categ_ids",
         "allowed_product_ids",
-        "allowed_product_ids.sale_ok")
+    )
     def _compute_all_allowed_product_ids(self):
         obj_product = self.env["product.product"]
         for so_type in self:
