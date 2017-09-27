@@ -11,7 +11,7 @@
     <field name="state">code</field>
     <field name="code">
 obj_type = env["sale.order.type"]
-obj_type.search([])._compute_all_allowed_product_ids()</field>
+obj_type.sudo().search([])._compute_all_allowed_product_ids()</field>
 </record>
 
 <record id="action_server_2_data" model="ir.actions.server">
@@ -20,7 +20,7 @@ obj_type.search([])._compute_all_allowed_product_ids()</field>
     <field name="state">code</field>
     <field name="code">
 obj_type = env["sale.order.type"]
-obj_type.search([])._compute_all_allowed_product_ids()</field>
+obj_type.sudo().search([])._compute_all_allowed_product_ids()</field>
 </record>
 
 </data>
