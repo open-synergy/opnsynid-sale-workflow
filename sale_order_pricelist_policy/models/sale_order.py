@@ -33,18 +33,16 @@ class SaleOrder(models.Model):
     def onchange_type_id(self):
         _super = super(SaleOrder, self)
         res = _super.onchange_type_id()
-        if self.partner_id.parent_id:
-            partner = self.partner_id.parent_id
-        else:
-            partner = self.partner_id
+        partner = self.partner_id.commercial_partner_id
         type_id = self.type_id
 
-        if partner:
-            pricelist =\
-                partner.get_pricelist_by_type(type_id)
-            if pricelist:
-                self.pricelist_id = pricelist
-            else:
-                return res
+        pricelist =\
+            partner.get_pricelist_by_type(type_id)
+        if pricelist:
+            self.pricelist_id = pricelist
         else:
-            return res
+            if type_id.pricelist_id:
+                self.pricelist_id = type_id.new_onchange_pricelist_id
+            else:
+                self.pricelist_id = partner.property_product_pricelist
+        return res
