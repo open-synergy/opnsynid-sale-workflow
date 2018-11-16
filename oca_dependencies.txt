@@ -10,5 +10,6 @@
 # To explicitely give the URL of a fork, and still use the version specified in
 # .travis.yml, use:
 sale-workflow https://github.com/OCA/sale-workflow
+opnsynid-partner-contact https://github.com/open-synergy/opnsynid-partner-contact
 #
 # To provide both the URL and a branch, use:
