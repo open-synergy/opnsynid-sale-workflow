@@ -4,6 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from openerp import models, fields, api, _
 from openerp.tools import float_is_zero
+from collections import defaultdict
 from openerp.exceptions import Warning as UserError
 
 
@@ -92,7 +93,7 @@ class SaleOrderBlanketWizard(models.TransientModel):
 
     @api.multi
     def create_sale_order(self):
-        order_lines = {}
+        order_lines = defaultdict(list)
         currency_id = 0
         pricelist_id = 0
         user_id = 0
@@ -116,7 +117,7 @@ class SaleOrderBlanketWizard(models.TransientModel):
                 "product_uom_qty": line.qty,
                 "tax_id": [(6, 0, line.taxes_id.ids)]
             }
-            order_lines[line.partner_id.id] = [(0, 0, vals)]
+            order_lines[line.partner_id.id].append((0, 0, vals))
 
             if currency_id == 0:
                 currency_id = line.blanket_line_id.order_id.currency_id.id

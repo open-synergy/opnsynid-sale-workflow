@@ -107,7 +107,7 @@ class SaleOrderBlanket(models.Model):
 
     @api.model
     def _get_order_type(self):
-        return self.env["sale.order.type"].search([])[:1].id
+        return self.env["sale.order.type"].search([])[:1]
 
     type_id = fields.Many2one(
         comodel_name="sale.order.type",
