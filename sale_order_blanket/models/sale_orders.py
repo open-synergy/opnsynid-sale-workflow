@@ -52,6 +52,9 @@ class SaleOrderLine(models.Model):
         string="Blanket Order line",
         copy=False,
     )
+    blanket_order_id = fields.Many2one(
+        related="blanket_order_line.order_id",
+    )
 
     @api.constrains("product_id")
     def check_product_id(self):

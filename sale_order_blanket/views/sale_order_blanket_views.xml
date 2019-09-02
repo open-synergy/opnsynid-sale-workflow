@@ -27,7 +27,8 @@
             <header>
                 <button name="%(sale_order_blanket_wizard_action)d" string="Create Sale Order"
                     type="action"
-                    attrs="{'invisible': [('state', '!=', 'open')]}"/>
+                    attrs="{'invisible': [('state', '!=', 'open')]}"
+                    context="{'blanket_order_id': active_id}"/>
                 <button name="button_confirm" string="Confirm" class="oe_highlight" type="object" attrs="{'invisible':['|',('state','!=','draft'),('confirm_ok','=',False)]}" confirm="Confirm Blanket Order. Are you sure?"/>
                 <button name="button_open" string="Approve" class="oe_highlight" type="object" attrs="{'invisible':['|',('state','!=','confirm'),('open_ok','=',False)]}" confirm="Approve Blanket Order. Are you sure?"/>
                 <button name="button_done" string="Done" class="oe_highlight" type="object" attrs="{'invisible':['|',('state','!=','open'),('done_ok','=',False)]}" confirm="Finish Blanket Order. Are you sure?"/>
@@ -347,7 +348,7 @@
 
 <menuitem
     id="sale_order_blanket_line_menu"
-    name="Blanket Order Line"
+    name="Blanket Order Lines"
     parent="base.menu_sales"
     action="sale_order_blanket_line_action"
     sequence="6"
