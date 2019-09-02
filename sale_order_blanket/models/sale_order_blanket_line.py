@@ -53,17 +53,42 @@ class SaleOrderBlanketLine(models.Model):
         required=True,
         ondelete="cascade",
     )
-    partner_id = fields.Many2one(
-        string="Customer",
-        comodel_name="res.partner",
-        related="order_id.partner_id",
+    company_id = fields.Many2one(
+        comodel_name="res.company",
+        related="order_id.company_id",
         store=True,
+        readonly=True,
+    )
+    currency_id = fields.Many2one(
+        comodel_name="res.currency",
+        related="order_id.currency_id",
+        readonly=True,
     )
     type_id = fields.Many2one(
         string="Type",
         comodel_name="sale.order.type",
         related="order_id.type_id",
         store=True,
+    )
+    partner_id = fields.Many2one(
+        related="order_id.partner_id",
+        string="Customer",
+        readonly=True,
+    )
+    user_id = fields.Many2one(
+        related="order_id.user_id",
+        string="Responsible",
+        readonly=True,
+    )
+    payment_term_id = fields.Many2one(
+        related="order_id.payment_term_id",
+        string="Payment Terms",
+        readonly=True,
+    )
+    pricelist_id = fields.Many2one(
+        related="order_id.pricelist_id",
+        string="Pricelist",
+        readonly=True,
     )
     product_id = fields.Many2one(
         string="Product",
@@ -82,15 +107,6 @@ class SaleOrderBlanketLine(models.Model):
         string="Price",
         required=True,
         digits=dp.get_precision("Product Price"),
-    )
-    taxes_id = fields.Many2many(
-        string="Taxes",
-        comodel_name="account.tax",
-        domain=[
-            "|",
-            ("active", "=", False),
-            ("active", "=", True),
-        ],
     )
     taxes_id = fields.Many2many(
         string="Taxes",
@@ -139,37 +155,6 @@ class SaleOrderBlanketLine(models.Model):
         inverse_name="blanket_order_line",
         readonly=True,
         copy=False,
-    )
-    company_id = fields.Many2one(
-        comodel_name="res.company",
-        related="order_id.company_id",
-        store=True,
-        readonly=True,
-    )
-    currency_id = fields.Many2one(
-        comodel_name="res.currency",
-        related="order_id.currency_id",
-        readonly=True,
-    )
-    partner_id = fields.Many2one(
-        related="order_id.partner_id",
-        string="Customer",
-        readonly=True,
-    )
-    user_id = fields.Many2one(
-        related="order_id.user_id",
-        string="Responsible",
-        readonly=True,
-    )
-    payment_term_id = fields.Many2one(
-        related="order_id.payment_term_id",
-        string="Payment Terms",
-        readonly=True,
-    )
-    pricelist_id = fields.Many2one(
-        related="order_id.pricelist_id",
-        string="Pricelist",
-        readonly=True,
     )
     price_subtotal = fields.Float(
         string="Subtotal",

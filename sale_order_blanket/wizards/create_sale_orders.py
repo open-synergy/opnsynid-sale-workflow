@@ -28,8 +28,26 @@ class SaleOrderBlanketWizard(models.TransientModel):
         precision = self.env["decimal.precision"].precision_get(
             "Product Unit of Measure")
         company_id = False
+        list_currency_id = []
+        list_pricelist_id = []
+        list_user_id = []
+        list_payment_term_id = []
+        list_type_id = []
+
+        if not bo_lines:
+            raise UserError(_("An order can\"t be empty"))
 
         for line in bo_lines:
+            if line.order_id.currency_id.id:
+                list_currency_id.append(line.order_id.currency_id.id)
+            if line.order_id.type_id.id:
+                list_type_id.append(line.order_id.type_id.id)
+            if line.order_id.pricelist_id.id:
+                list_pricelist_id.append(line.order_id.pricelist_id.id)
+            if line.order_id.user_id.id:
+                list_user_id.append(line.order_id.user_id.id)
+            if line.order_id.payment_term_id.id:
+                list_payment_term_id.append(line.order_id.payment_term_id.id)
 
             if line.order_id.state != "open":
                 raise UserError(
@@ -49,6 +67,21 @@ class SaleOrderBlanketWizard(models.TransientModel):
                       "from the same company."))
             else:
                 company_id = line_company_id
+        if list_currency_id and len(set(list_currency_id)) > 1:
+            raise UserError(_("Can not create Sale Order from Blanket "
+                              "Order lines with different currencies"))
+        if list_type_id and len(set(list_type_id)) > 1:
+            raise UserError(_("Can not create Sale Order from Blanket "
+                              "Order lines with different order types"))
+        if list_pricelist_id and len(set(list_pricelist_id)) > 1:
+            raise UserError(_("Can not create Sale Order from Blanket "
+                              "Order lines with different pricelist"))
+        if list_payment_term_id and len(set(list_payment_term_id)) > 1:
+            raise UserError(_("Can not create Sale Order from Blanket "
+                              "Order lines with different payment term"))
+        if list_user_id and len(set(list_user_id)) > 1:
+            raise UserError(_("Can not create Sale Order from Blanket "
+                              "Order lines with different user"))
 
     @api.model
     def _default_lines(self):
@@ -63,17 +96,23 @@ class SaleOrderBlanketWizard(models.TransientModel):
 
         self._check_valid_blanket_order_line(bo_lines)
 
-        lines = [(0, 0, {
-            "blanket_line_id": l.id,
-            "product_id": l.product_id.id,
-            "date_schedule": l.date_schedule,
-            "remaining_uom_qty": l.remaining_uom_qty,
-            "price_unit": l.price_unit,
-            "product_uom": l.product_uom,
-            "qty": l.remaining_uom_qty,
-            "partner_id": l.partner_id,
-        }) for l in bo_lines]
+        lines = [(0, 0, self._prepare_order_line_data(l)) for l in bo_lines]
+
         return lines
+
+    @api.multi
+    def _prepare_order_line_data(self, line):
+        result = {
+            "blanket_line_id": line.id,
+            "product_id": line.product_id.id,
+            "date_schedule": line.date_schedule,
+            "remaining_uom_qty": line.remaining_uom_qty,
+            "price_unit": line.price_unit,
+            "product_uom": line.product_uom.id,
+            "qty": line.remaining_uom_qty,
+            "partner_id": line.partner_id.id
+        }
+        return result
 
     blanket_order_id = fields.Many2one(
         comodel_name="sale.blanket.order",
@@ -81,7 +120,7 @@ class SaleOrderBlanketWizard(models.TransientModel):
     )
     sale_order_id = fields.Many2one(
         comodel_name="sale.order",
-        string="Purchase Order",
+        string="Sale Order",
         domain=[("state", "=", "draft")]
     )
     line_ids = fields.One2many(
@@ -94,11 +133,6 @@ class SaleOrderBlanketWizard(models.TransientModel):
     @api.multi
     def create_sale_order(self):
         order_lines = defaultdict(list)
-        currency_id = 0
-        pricelist_id = 0
-        user_id = 0
-        payment_term_id = 0
-        type_id = 0
         for line in self.line_ids:
             if line.qty == 0.0:
                 continue
@@ -107,70 +141,16 @@ class SaleOrderBlanketWizard(models.TransientModel):
                 raise UserError(
                     _("You can\"t order more than the remaining quantities"))
 
-            vals = {
-                "product_id": line.product_id.id,
-                "name": line.product_id.name,
-                "product_uom": line.product_uom.id,
-                "sequence": line.blanket_line_id.sequence,
-                "price_unit": line.blanket_line_id.price_unit,
-                "blanket_order_line": line.blanket_line_id.id,
-                "product_uom_qty": line.qty,
-                "tax_id": [(6, 0, line.taxes_id.ids)]
-            }
+            vals = self._prepare_wizard_line_data(line)
             order_lines[line.partner_id.id].append((0, 0, vals))
 
-            if currency_id == 0:
-                currency_id = line.blanket_line_id.order_id.currency_id.id
-            elif currency_id != line.blanket_line_id.order_id.currency_id.id:
-                currency_id = False
-
-            if pricelist_id == 0:
-                pricelist_id = line.blanket_line_id.pricelist_id.id
-            elif pricelist_id != line.blanket_line_id.pricelist_id.id:
-                pricelist_id = False
-
-            if user_id == 0:
-                user_id = line.blanket_line_id.user_id.id
-            elif user_id != line.blanket_line_id.user_id.id:
-                user_id = False
-
-            if payment_term_id == 0:
-                payment_term_id = line.blanket_line_id.payment_term_id.id
-            elif payment_term_id != line.blanket_line_id.payment_term_id.id:
-                payment_term_id = False
-
-            if type_id == 0:
-                type_id = line.blanket_line_id.order_id.type_id.id
-            elif type_id != line.blanket_line_id.order_id.type_id.id:
-                type_id = False
-
-        if not order_lines:
-            raise UserError(_("An order can\"t be empty"))
-        if not currency_id:
-            raise UserError(_("Can not create Sale Order from Blanket "
-                              "Order lines with different currencies"))
-        if not type_id:
-            raise UserError(_("Can not create Sale Order from Blanket "
-                              "Order lines with different order types"))
-
         res = []
-        for customer in order_lines:
-            order_vals = {
-                "partner_id": customer,
-            }
-            if self.blanket_order_id:
-                order_vals.update({
-                    "origin": self.blanket_order_id.name,
-                })
-            order_vals.update({
-                "user_id": user_id if user_id else False,
-                "currency_id": currency_id if currency_id else False,
-                "pricelist_id": pricelist_id if pricelist_id else False,
-                "payment_term_id": (payment_term_id
-                                    if payment_term_id
-                                    else False),
-                "order_line": order_lines[customer],
-            })
+        for order_line in order_lines:
+            order_vals =\
+                self._prepare_sale_order_data(
+                    order_line,
+                    order_lines
+                )
             sale_order = self.env["sale.order"].create(order_vals)
             res.append(sale_order.id)
         return {
@@ -183,6 +163,45 @@ class SaleOrderBlanketWizard(models.TransientModel):
             "context": {"from_sale_order": True},
             "type": "ir.actions.act_window"
         }
+
+    @api.multi
+    def _prepare_sale_order_data(
+        self,
+        order_line,
+        order_lines
+    ):
+        self.ensure_one()
+
+        vals = {
+            "partner_id": order_line,
+        }
+        if self.blanket_order_id:
+            vals.update({
+                "origin": self.blanket_order_id.name,
+                "user_id": self.blanket_order_id.user_id.id,
+                "currency_id": self.blanket_order_id.currency_id.id,
+                "pricelist_id": self.blanket_order_id.pricelist_id.id,
+                "payment_term_id": self.blanket_order_id.payment_term_id.id,
+            })
+        vals.update({
+            "order_line": order_lines[order_line],
+        })
+        return vals
+
+    @api.multi
+    def _prepare_wizard_line_data(self, line):
+        self.ensure_one()
+        result = {
+            "product_id": line.product_id.id,
+            "name": line.product_id.name,
+            "product_uom": line.product_uom.id,
+            "sequence": line.blanket_line_id.sequence,
+            "price_unit": line.blanket_line_id.price_unit,
+            "blanket_order_line": line.blanket_line_id.id,
+            "product_uom_qty": line.qty,
+            "tax_id": [(6, 0, line.taxes_id.ids)]
+        }
+        return result
 
 
 class SaleOrderBlanketWizardLine(models.TransientModel):
