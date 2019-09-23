@@ -103,6 +103,7 @@ class SaleOrderBlanketWizard(models.TransientModel):
     @api.multi
     def _prepare_order_line_data(self, line):
         result = {
+            "blanket_order_id": line.order_id.id,
             "blanket_line_id": line.id,
             "product_id": line.product_id.id,
             "date_schedule": line.date_schedule,
@@ -115,8 +116,8 @@ class SaleOrderBlanketWizard(models.TransientModel):
         return result
 
     blanket_order_id = fields.Many2one(
-        comodel_name="sale.blanket.order",
-        readonly=True
+        string="#Blanket Order",
+        comodel_name="sale.order.blanket",
     )
     sale_order_id = fields.Many2one(
         comodel_name="sale.order",
@@ -212,6 +213,11 @@ class SaleOrderBlanketWizardLine(models.TransientModel):
     )
     blanket_line_id = fields.Many2one(
         comodel_name="sale.order.blanket.line"
+    )
+    blanket_order_id = fields.Many2one(
+        string="#Blanket Order",
+        comodel_name="sale.order.blanket",
+        readonly=True,
     )
     product_id = fields.Many2one(
         comodel_name="product.product",
