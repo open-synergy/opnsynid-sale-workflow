@@ -116,8 +116,9 @@ class SaleOrderBlanketWizard(models.TransientModel):
         return result
 
     blanket_order_id = fields.Many2one(
-        string="#Blanket Order",
+        string="# Blanket Order",
         comodel_name="sale.order.blanket",
+        readonly=True
     )
     sale_order_id = fields.Many2one(
         comodel_name="sale.order",
