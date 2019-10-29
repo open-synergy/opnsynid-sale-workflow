@@ -530,7 +530,7 @@ class SaleOrderBlanket(models.Model):
             "state": "cancel",
             "cancelled_date": fields.Datetime.now(),
             "cancelled_user_id": self.env.user.id,
-            "cancel_reason_id": self.cancel_reason_id,
+            "cancel_reason_id": self.cancel_reason_id.id,
             "signed_document_id": False,
         }
         return result
