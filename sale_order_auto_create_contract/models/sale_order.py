@@ -11,20 +11,30 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     @api.multi
-    def action_wait(self):
+    def action_button_confirm(self):
         _super = super(SaleOrder, self)
-        _super.action_wait()
+        _super.action_button_confirm()
         for sale in self:
-            contract = sale._create_contract()
-            contract_id = contract and contract.id or False
-            sale.write({"project_id": contract_id})
+            sale._assign_contract()
         return True
+
+    @api.multi
+    def _assign_contract(self):
+        self.ensure_one()
+        contract = self._create_contract()
+        if contract:
+            self.write({"project_id": contract.id})
 
     @api.multi
     def _create_contract(self):
         self.ensure_one()
-        obj_contract = self.env["account.analytic.account"]
-        return obj_contract.create(self._prepare_contract())
+        result = False
+        if self.type_id and \
+                self.type_id.auto_create_contract and \
+                not self.project_id:
+            obj_contract = self.env["account.analytic.account"]
+            result = obj_contract.create(self._prepare_contract())
+        return result
 
     @api.multi
     def _prepare_contract(self):
@@ -34,6 +44,5 @@ class SaleOrder(models.Model):
             "name": name,
             "type": "contract",
             "partner_id": self.partner_id.commercial_partner_id.id,
-            "code": self.name,
             "manager_id": self.user_id.id,
         }

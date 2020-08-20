@@ -5,7 +5,7 @@
 
 {
     "name": "Sale Order Auto Create Contract",
-    "version": "8.0.1.0.0",
+    "version": "8.0.1.0.1",
     "category": "Sale Management",
     "website": "https://opensynergy-indonesia.com",
     "author": "OpenSynergy Indonesia",
