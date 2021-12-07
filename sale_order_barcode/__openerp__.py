@@ -5,15 +5,12 @@
     "name": "Sale Order Barcode",
     "version": "8.0.2.0.0",
     "category": "Sale",
-    "website": "https://opensynergy-indonesia.com",
-    "author": "OpenSynergy Indonesia",
+    "website": "https://simetri-sinergi.id",
+    "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
     "installable": True,
     "depends": [
         "sale",
     ],
-    "data": [
-        "wizards/sale_order_barcode_view.xml",
-        "views/sale_order_view.xml"
-    ],
+    "data": ["wizards/sale_order_barcode_view.xml", "views/sale_order_view.xml"],
 }

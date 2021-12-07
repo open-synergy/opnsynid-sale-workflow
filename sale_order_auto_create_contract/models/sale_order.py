@@ -3,7 +3,7 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, api
+from openerp import api, models
 
 
 class SaleOrder(models.Model):
@@ -29,9 +29,7 @@ class SaleOrder(models.Model):
     def _create_contract(self):
         self.ensure_one()
         result = False
-        if self.type_id and \
-                self.type_id.auto_create_contract and \
-                not self.project_id:
+        if self.type_id and self.type_id.auto_create_contract and not self.project_id:
             obj_contract = self.env["account.analytic.account"]
             result = obj_contract.create(self._prepare_contract())
         return result

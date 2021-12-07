@@ -1,26 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <openerp>
     <data>
         <record id="sale_order_view_form" model="ir.ui.view">
             <field name="name">Price Change Policy</field>
             <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale_order_policy.sale_order_view_form"/>
+            <field name="inherit_id" ref="sale_order_policy.sale_order_view_form" />
             <field name="arch" type="xml">
                 <data>
-                    <xpath expr="//group[@name='grp_policy_sale_order']" position="inside">
-                        <field name="price_change_ok"/>
+                    <xpath
+                        expr="//group[@name='grp_policy_sale_order']"
+                        position="inside"
+                    >
+                        <field name="price_change_ok" />
                     </xpath>
                     <xpath expr="//form//field[@name='price_unit']" position="after">
-                        <field name="function_price_unit"
+                        <field
+                            name="function_price_unit"
                             attrs="{'invisible':[('price_change_ok','=',True)]}"
-                            />
-                        <field name="price_change_ok" invisible="0"/>
+                        />
+                        <field name="price_change_ok" invisible="0" />
                     </xpath>
                     <xpath expr="//field[@name='order_line']" position="attributes">
-                        <attribute name="context">{'default_price_change_ok':price_change_ok}</attribute>
+                        <attribute
+                            name="context"
+                        >{'default_price_change_ok':price_change_ok}</attribute>
                     </xpath>
-                    <xpath expr="//form//field[@name='price_unit']" position="attributes">
-                        <attribute name="attrs">{'invisible':[('price_change_ok','=',False)]}</attribute>
+                    <xpath
+                        expr="//form//field[@name='price_unit']"
+                        position="attributes"
+                    >
+                        <attribute
+                            name="attrs"
+                        >{'invisible':[('price_change_ok','=',False)]}</attribute>
                     </xpath>
                 </data>
             </field>

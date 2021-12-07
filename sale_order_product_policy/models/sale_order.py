@@ -2,27 +2,26 @@
 # © 2016 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from openerp import models, fields, api
+from openerp import api, fields, models
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     @api.multi
-    @api.depends(
-        "type_id"
-    )
+    @api.depends("type_id")
     def _compute_allowed_product(self):
         obj_product = self.env["product.product"]
         for document in self:
             if document.type_id.limit_product_selection:
-                document.allowed_product_ids = \
-                    document.type_id.allowed_product_ids.ids
-                document.allowed_product_categ_ids = \
+                document.allowed_product_ids = document.type_id.allowed_product_ids.ids
+                document.allowed_product_categ_ids = (
                     document.type_id.allowed_product_categ_ids.ids
+                )
             else:
-                document.allowed_product_ids = \
-                    obj_product.search([("sale_ok", "=", True)])
+                document.allowed_product_ids = obj_product.search(
+                    [("sale_ok", "=", True)]
+                )
 
     allowed_product_ids = fields.Many2many(
         string="Allowed Products",

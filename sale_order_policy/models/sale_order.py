@@ -2,7 +2,7 @@
 # Copyright 2017 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, api, fields, SUPERUSER_ID
+from openerp import SUPERUSER_ID, api, fields, models
 
 
 class SaleOrder(models.Model):
@@ -19,7 +19,7 @@ class SaleOrder(models.Model):
         "type_id.create_invoice_group_ids",
         "type_id.copy_quotation_group_ids",
         "type_id.cancel_quot_group_ids",
-        "type_id.cancel_order_group_ids"
+        "type_id.cancel_order_group_ids",
     )
     def _compute_policy(self):
         user_id = self.env.user.id
@@ -37,24 +37,27 @@ class SaleOrder(models.Model):
                 sale_order.cancel_order_ok = True
                 continue
 
-            sale_order.invoice_recreate_ok =\
-                self._button_policy(order_type, 'invoice_recreate')
-            sale_order.invoice_corrected_ok =\
-                self._button_policy(order_type, 'invoice_corrected')
-            sale_order.quotation_send_ok =\
-                self._button_policy(order_type, 'quotation_send')
-            sale_order.confirm_order_ok =\
-                self._button_policy(order_type, 'confirm_order')
-            sale_order.view_invoice_ok =\
-                self._button_policy(order_type, 'view_invoice')
-            sale_order.create_invoice_ok =\
-                self._button_policy(order_type, 'create_invoice')
-            sale_order.copy_quotation_ok =\
-                self._button_policy(order_type, 'copy_quotation')
-            sale_order.cancel_quot_ok =\
-                self._button_policy(order_type, 'cancel_quot')
-            sale_order.cancel_order_ok =\
-                self._button_policy(order_type, 'cancel_order')
+            sale_order.invoice_recreate_ok = self._button_policy(
+                order_type, "invoice_recreate"
+            )
+            sale_order.invoice_corrected_ok = self._button_policy(
+                order_type, "invoice_corrected"
+            )
+            sale_order.quotation_send_ok = self._button_policy(
+                order_type, "quotation_send"
+            )
+            sale_order.confirm_order_ok = self._button_policy(
+                order_type, "confirm_order"
+            )
+            sale_order.view_invoice_ok = self._button_policy(order_type, "view_invoice")
+            sale_order.create_invoice_ok = self._button_policy(
+                order_type, "create_invoice"
+            )
+            sale_order.copy_quotation_ok = self._button_policy(
+                order_type, "copy_quotation"
+            )
+            sale_order.cancel_quot_ok = self._button_policy(order_type, "cancel_quot")
+            sale_order.cancel_order_ok = self._button_policy(order_type, "cancel_order")
 
     @api.model
     def _button_policy(self, order_type, button_type):
@@ -62,27 +65,27 @@ class SaleOrder(models.Model):
         group_ids = user.groups_id.ids
         button_group_ids = []
 
-        if button_type == 'invoice_recreate':
+        if button_type == "invoice_recreate":
             button_group_ids = order_type.invoice_recreate_group_ids.ids
-        elif button_type == 'invoice_corrected':
+        elif button_type == "invoice_corrected":
             button_group_ids = order_type.invoice_corrected_group_ids.ids
-        elif button_type == 'quotation_send':
+        elif button_type == "quotation_send":
             button_group_ids = order_type.quotation_send_group_ids.ids
-        elif button_type == 'confirm_order':
+        elif button_type == "confirm_order":
             button_group_ids = order_type.confirm_order_group_ids.ids
-        elif button_type == 'view_invoice':
+        elif button_type == "view_invoice":
             button_group_ids = order_type.view_invoice_group_ids.ids
-        elif button_type == 'create_invoice':
+        elif button_type == "create_invoice":
             button_group_ids = order_type.create_invoice_group_ids.ids
-        elif button_type == 'copy_quotation':
+        elif button_type == "copy_quotation":
             button_group_ids = order_type.copy_quotation_group_ids.ids
-        elif button_type == 'cancel_quot':
+        elif button_type == "cancel_quot":
             button_group_ids = order_type.cancel_quot_group_ids.ids
-        elif button_type == 'cancel_order':
+        elif button_type == "cancel_order":
             button_group_ids = order_type.cancel_order_group_ids.ids
 
         if button_group_ids:
-            if (set(button_group_ids) & set(group_ids)):
+            if set(button_group_ids) & set(group_ids):
                 result = True
             else:
                 result = False

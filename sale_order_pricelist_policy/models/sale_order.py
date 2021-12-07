@@ -2,7 +2,7 @@
 # Copyright 2018 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, api
+from openerp import api, models
 
 
 class SaleOrder(models.Model):
@@ -13,15 +13,13 @@ class SaleOrder(models.Model):
         order_type = self.type_id
         partner = self.partner_id.commercial_partner_id
         _super = super(SaleOrder, self)
-        old_res =\
-            _super.onchange_partner_id(self.partner_id.id)
+        old_res = _super.onchange_partner_id(self.partner_id.id)
         if type(old_res) is dict and "value" in old_res:
             for field, value in old_res.get("value").items():
                 if hasattr(self, field):
                     setattr(self, field, value)
         if order_type:
-            pricelist =\
-                partner.get_pricelist_by_type(order_type)
+            pricelist = partner.get_pricelist_by_type(order_type)
             if pricelist:
                 self.type_id = order_type
                 self.pricelist_id = pricelist
@@ -33,18 +31,15 @@ class SaleOrder(models.Model):
         partner = self.partner_id.commercial_partner_id
         type_id = self.type_id
 
-        pricelist =\
-            partner.get_pricelist_by_type(type_id)
+        pricelist = partner.get_pricelist_by_type(type_id)
 
         if pricelist:
             self.pricelist_id = pricelist
         else:
             if partner.property_product_pricelist:
-                self.pricelist_id =\
-                    partner.property_product_pricelist
+                self.pricelist_id = partner.property_product_pricelist
             elif type_id.pricelist_id:
-                self.pricelist_id =\
-                    type_id.pricelist_id
+                self.pricelist_id = type_id.pricelist_id
             else:
                 self.pricelist_id = False
         return res

@@ -1,14 +1,14 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <openerp>
 <data>
 <record id="sale_order_view_form" model="ir.ui.view">
     <field name="name">sale.order form</field>
     <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="inherit_id" ref="sale.view_order_form" />
     <field name="arch" type="xml">
         <data>
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="primary_sector_id"/>
+                <field name="primary_sector_id" />
             </xpath>
         </data>
     </field>
@@ -17,11 +17,11 @@
 <record id="sale_order_quotation_view_tree" model="ir.ui.view">
     <field name="name">sale.order tree</field>
     <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale.view_quotation_tree"/>
+    <field name="inherit_id" ref="sale.view_quotation_tree" />
     <field name="arch" type="xml">
         <data>
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="primary_sector_id"/>
+                <field name="primary_sector_id" />
             </xpath>
         </data>
     </field>
@@ -30,11 +30,11 @@
 <record id="sale_order_view_tree" model="ir.ui.view">
     <field name="name">sale.order tree</field>
     <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale.view_order_tree"/>
+    <field name="inherit_id" ref="sale.view_order_tree" />
     <field name="arch" type="xml">
         <data>
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="primary_sector_id"/>
+                <field name="primary_sector_id" />
             </xpath>
         </data>
     </field>
@@ -43,13 +43,17 @@
 <record id="sale_order_view_search" model="ir.ui.view">
     <field name="name">sale.order search</field>
     <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+    <field name="inherit_id" ref="sale.view_sales_order_filter" />
     <field name="arch" type="xml">
         <xpath expr="//field[@name='project_id']" position="after">
-            <field name="primary_sector_id"/>
+            <field name="primary_sector_id" />
         </xpath>
         <xpath expr="//group[1]" position="inside">
-            <filter name="grp_primary_sector" string="Primary Sector" context="{'group_by':'primary_sector_id'}"/>
+            <filter
+                        name="grp_primary_sector"
+                        string="Primary Sector"
+                        context="{'group_by':'primary_sector_id'}"
+                    />
         </xpath>
     </field>
 </record>

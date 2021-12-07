@@ -3,9 +3,9 @@
 # Copyright 2019 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api, _
-from openerp.exceptions import Warning as UserError
 import openerp.addons.decimal_precision as dp
+from openerp import _, api, fields, models
+from openerp.exceptions import Warning as UserError
 
 
 class SaleOrderBlanket(models.Model):
@@ -16,7 +16,7 @@ class SaleOrderBlanket(models.Model):
         "base.sequence_document",
         "base.workflow_policy_object",
         "base.document_version",
-        "base.cancel.reason_common"
+        "base.cancel.reason_common",
     ]
 
     @api.model
@@ -32,17 +32,19 @@ class SaleOrderBlanket(models.Model):
         _super._compute_policy()
 
     @api.depends("line_ids.price_total")
-    def _amount_all(self):
+    def _compute_amount_all(self):
         for order in self:
             amount_untaxed = amount_tax = 0.0
             for line in order.line_ids:
                 amount_untaxed += line.price_subtotal
                 amount_tax += line.price_tax
-            order.update({
-                "amount_untaxed": order.currency_id.round(amount_untaxed),
-                "amount_tax": order.currency_id.round(amount_tax),
-                "amount_total": amount_untaxed + amount_tax,
-            })
+            order.update(
+                {
+                    "amount_untaxed": order.currency_id.round(amount_untaxed),
+                    "amount_tax": order.currency_id.round(amount_tax),
+                    "amount_total": amount_untaxed + amount_tax,
+                }
+            )
 
     name = fields.Char(
         string="Name",
@@ -151,45 +153,40 @@ class SaleOrderBlanket(models.Model):
     )
 
     fiscal_position_id = fields.Many2one(
-        string="Fiscal Position",
-        comodel_name="account.fiscal.position"
+        string="Fiscal Position", comodel_name="account.fiscal.position"
     )
 
     @api.model
     def _get_default_section_id(self):
-        """ Gives default section by checking if present in the context """
+        """Gives default section by checking if present in the context"""
         obj_res_users = self.env["res.users"]
         context = self._context
-        section_id = \
-            self.with_context(
-                context
-            )._resolve_section_id_from_context() or False
+        section_id = (
+            self.with_context(context)._resolve_section_id_from_context() or False
+        )
         if not section_id:
-            section_id =\
-                obj_res_users.with_context(
-                    context
-                ).browse(
-                    self.env.user.id
-                ).default_section_id.id or False
+            section_id = (
+                obj_res_users.with_context(context)
+                .browse(self.env.user.id)
+                .default_section_id.id
+                or False
+            )
         return section_id
 
     @api.model
     def _resolve_section_id_from_context(self):
-        """ Returns ID of section based on the value of "section_id"
-            context key, or None if it cannot be resolved to a single
-            Sales Team.
+        """Returns ID of section based on the value of "section_id"
+        context key, or None if it cannot be resolved to a single
+        Sales Team.
         """
         context = self._context
         obj_section = self.env["crm.case.section"]
-        if type(context.get("default_section_id")) in (int, long):
+        if type(context.get("default_section_id")) in (int, long):  # noqa: F821
             return context.get("default_section_id")
-        if isinstance(context.get("default_section_id"), basestring):
-            section_ids =\
-                obj_section.with_context(
-                    context
-                ).name_search(
-                    name=context["default_section_id"]
-                )
+        if isinstance(context.get("default_section_id"), basestring):  # noqa: F821
+            section_ids = obj_section.with_context(context).name_search(
+                name=context["default_section_id"]
+            )
             if len(section_ids) == 1:
                 return int(section_ids[0][0])
         return None
@@ -235,21 +232,21 @@ class SaleOrderBlanket(models.Model):
         digits=dp.get_precision("Account"),
         store=True,
         readonly=True,
-        compute="_amount_all",
+        compute="_compute_amount_all",  # noqa: C8108
     )
     amount_tax = fields.Float(
         string="Taxes",
         digits=dp.get_precision("Account"),
         store=True,
         readonly=True,
-        compute="_amount_all",
+        compute="_compute_amount_all",  # noqa: C8108
     )
     amount_total = fields.Float(
         string="Total",
         digits=dp.get_precision("Account"),
         store=True,
         readonly=True,
-        compute="_amount_all",
+        compute="_compute_amount_all",  # noqa: C8108
     )
     line_count = fields.Integer(
         string="Sale Blanket Order Line count",
@@ -362,91 +359,74 @@ class SaleOrderBlanket(models.Model):
     )
 
     @api.multi
-    @api.onchange(
-        "partner_id"
-    )
+    @api.onchange("partner_id")
     def onchange_user_id(self):
         if not self.partner_id:
             self.user_id = False
             return
 
-        self.user_id = (
-            self.partner_id.user_id and
-            self.partner_id.user_id.id or
-            False
-        )
+        self.user_id = self.partner_id.user_id and self.partner_id.user_id.id or False
 
     @api.multi
-    @api.onchange(
-        "partner_id",
-        "company_id"
-    )
+    @api.onchange("partner_id", "company_id")
     def onchange_fiscal_position_id(self):
         if not self.partner_id:
             self.fiscal_position_id = False
             return
 
-        obj_fiscal_position =\
-            self.env["account.fiscal.position"]
-        self.fiscal_position_id =\
-            obj_fiscal_position.get_fiscal_position(
-                self.company_id.id,
-                self.partner_id.id
-            )
+        obj_fiscal_position = self.env["account.fiscal.position"]
+        self.fiscal_position_id = obj_fiscal_position.get_fiscal_position(
+            self.company_id.id, self.partner_id.id
+        )
 
     @api.multi
-    @api.onchange(
-        "partner_id"
-    )
+    @api.onchange("partner_id")
     def onchange_payment_term_id(self):
         if not self.partner_id:
             self.payment_term_id = False
             return
 
-        obj_res_partner =\
-            self.env["res.partner"]
+        obj_res_partner = self.env["res.partner"]
         partner = obj_res_partner.browse(self.partner_id.id)
         addr = partner.address_get(["invoice"])
         invoice_part = obj_res_partner.browse(addr["invoice"])
         self.payment_term_id = (
-            invoice_part.property_payment_term and
-            invoice_part.property_payment_term.id or
-            False
+            invoice_part.property_payment_term
+            and invoice_part.property_payment_term.id
+            or False
         )
 
     @api.multi
-    @api.onchange(
-        "partner_id"
-    )
+    @api.onchange("partner_id")
     def onchange_pricelist_id(self):
         if not self.partner_id:
             self.pricelist_id = False
             return
         self.pricelist_id = (
-            self.partner_id.property_product_pricelist and
-            self.partner_id.property_product_pricelist.id or
-            False
+            self.partner_id.property_product_pricelist
+            and self.partner_id.property_product_pricelist.id
+            or False
         )
 
     @api.multi
     def action_view_sale_orders(self):
         sale_orders = self._get_sale_orders()
-        action = self.env.ref('sale.action_orders').read()[0]
+        action = self.env.ref("sale.action_orders").read()[0]
         if len(sale_orders) > 0:
-            action['domain'] = [('id', 'in', sale_orders.ids)]
-            action['context'] = [('id', 'in', sale_orders.ids)]
+            action["domain"] = [("id", "in", sale_orders.ids)]
+            action["context"] = [("id", "in", sale_orders.ids)]
         else:
-            action = {'type': 'ir.actions.act_window_close'}
+            action = {"type": "ir.actions.act_window_close"}
         return action
 
     @api.multi
     def action_view_sale_blanket_order_line(self):
         action = self.env.ref(
-            'sale_order_blanket'
-            '.sale_order_blanket_line_action').read()[0]
-        lines = self.mapped('line_ids')
+            "sale_order_blanket" ".sale_order_blanket_line_action"
+        ).read()[0]
+        lines = self.mapped("line_ids")
         if len(lines) > 0:
-            action['domain'] = [('id', 'in', lines.ids)]
+            action["domain"] = [("id", "in", lines.ids)]
         return action
 
     @api.model
@@ -454,9 +434,11 @@ class SaleOrderBlanket(models.Model):
         _super = super(SaleOrderBlanket, self)
         result = _super.create(values)
         sequence = result._create_sequence()
-        result.write({
-            "name": sequence,
-        })
+        result.write(
+            {
+                "name": sequence,
+            }
+        )
         return result
 
     @api.multi

@@ -1,27 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <openerp>
     <data>
 
         <record id="sale_order_barcode_view_form" model="ir.ui.view">
             <field name="name">Sale Order Barcode Form</field>
             <field name="model">sale.order.barcode</field>
-            <field name="arch"  type="xml">
+            <field name="arch" type="xml">
                 <form string="Sale Order Barcode Wizard">
                     <group name="product">
-                        <field name="product_barcode"/>
-                        <field name="product_id" options='{"no_open": True}'/>
-                        <label for="product_qty"/>
+                        <field name="product_barcode" />
+                        <field name="product_id" options='{"no_open": True}' />
+                        <label for="product_qty" />
                         <div>
-                            <field name="product_qty" class="oe_inline"/>
-                            <field name="product_uom_id" options='{"no_open": True}' class="oe_inline"/>
+                            <field name="product_qty" class="oe_inline" />
+                            <field
+                                name="product_uom_id"
+                                options='{"no_open": True}'
+                                class="oe_inline"
+                            />
                         </div>
-                        <field name="type"/>
+                        <field name="type" />
                     </group>
                     <footer>
-                        <button name="save" type="object"
-                            class="oe_highlight" string="Save &amp; New"/>
+                        <button
+                            name="save"
+                            type="object"
+                            class="oe_highlight"
+                            string="Save &amp; New"
+                        />
                             or
-                        <button special="cancel" string="Cancel" class="oe_link"/>
+                        <button special="cancel" string="Cancel" class="oe_link" />
                     </footer>
                 </form>
             </field>
