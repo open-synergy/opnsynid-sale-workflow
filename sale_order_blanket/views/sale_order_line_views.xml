@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <openerp>
     <data>
         <record id="view_order_line_form2" model="ir.ui.view">
             <field name="name">sale.order.line.form.blanket.order</field>
             <field name="model">sale.order.line</field>
-            <field name="inherit_id" ref="sale.view_order_line_form2"/>
+            <field name="inherit_id" ref="sale.view_order_line_form2" />
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='order_partner_id']" position="after">
-                        <field name="blanket_order_id"/>
+                        <field name="blanket_order_id" />
                     </xpath>
                 </data>
             </field>

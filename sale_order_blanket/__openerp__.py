@@ -6,8 +6,8 @@
     "name": "Sale Order Blanket",
     "version": "8.0.1.3.1",
     "category": "Sale Management",
-    "website": "https://opensynergy-indonesia.com",
-    "author": "OpenSynergy Indonesia",
+    "website": "https://simetri-sinergi.id",
+    "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
     "installable": True,
     "depends": [
@@ -16,7 +16,7 @@
         "base_workflow_policy",
         "base_document_version",
         "base_cancel_reason",
-        "base_print_policy"
+        "base_print_policy",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -24,7 +24,7 @@
         "data/base_workflow_policy_data.xml",
         "data/base_sequence_configurator_data.xml",
         "data/base_cancel_reason_configurator_data.xml",
-        'wizards/create_sale_orders.xml',
+        "wizards/create_sale_orders.xml",
         "views/sale_order_type_views.xml",
         "views/sale_order_blanket_views.xml",
         "views/sale_order_views.xml",

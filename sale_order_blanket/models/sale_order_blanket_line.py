@@ -2,18 +2,16 @@
 # Copyright 2018 ACSONE SA/NV
 # Copyright 2019 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from openerp import models, fields, SUPERUSER_ID, api, _
-from openerp.exceptions import Warning as UserError
 import openerp.addons.decimal_precision as dp
+from openerp import SUPERUSER_ID, _, api, fields, models
+from openerp.exceptions import Warning as UserError
 from openerp.tools import float_is_zero
 
 
 class SaleOrderBlanketLine(models.Model):
     _name = "sale.order.blanket.line"
     _description = "Blanket Order Line"
-    _inherit = [
-        "mail.thread"
-    ]
+    _inherit = ["mail.thread"]
 
     @api.multi
     @api.depends(
@@ -22,7 +20,7 @@ class SaleOrderBlanketLine(models.Model):
         "taxes_id",
         "order_id.partner_id",
         "product_id",
-        "currency_id"
+        "currency_id",
     )
     def _compute_amount(self):
         for line in self:
@@ -31,14 +29,17 @@ class SaleOrderBlanketLine(models.Model):
                 price,
                 line.original_uom_qty,
                 product=line.product_id,
-                partner=line.order_id.partner_id
+                partner=line.order_id.partner_id,
             )
-            line.update({
-                "price_tax": sum(
-                    t.get("amount", 0.0) for t in taxes.get("taxes", [])),
-                "price_total": taxes["total_included"],
-                "price_subtotal": taxes["total"],
-            })
+            line.update(
+                {
+                    "price_tax": sum(
+                        t.get("amount", 0.0) for t in taxes.get("taxes", [])
+                    ),
+                    "price_total": taxes["total_included"],
+                    "price_subtotal": taxes["total"],
+                }
+            )
 
     name = fields.Char(
         string="Description",
@@ -179,9 +180,7 @@ class SaleOrderBlanketLine(models.Model):
     )
 
     @api.multi
-    @api.onchange(
-        "product_id"
-    )
+    @api.onchange("product_id")
     def onchange_taxes_id(self):
         if self.product_id:
             fpos = self.order_id.fiscal_position_id
@@ -189,48 +188,40 @@ class SaleOrderBlanketLine(models.Model):
                 company_id = self.env.user.company_id.id
                 self.taxes_id = fpos.map_tax(
                     self.product_id.supplier_taxes_id.filtered(
-                        lambda r: r.company_id.id == company_id))
+                        lambda r: r.company_id.id == company_id
+                    )
+                )
             else:
                 self.taxes_id = fpos.map_tax(self.product_id.supplier_taxes_id)
 
     @api.multi
-    @api.onchange(
-        "product_id"
-    )
+    @api.onchange("product_id")
     def onchange_product_uom(self):
         if self.product_id:
             if not self.product_uom:
                 self.product_uom = self.product_id.uom_id.id
 
     @api.multi
-    @api.onchange(
-        "product_id",
-        "original_uom_qty"
-    )
+    @api.onchange("product_id", "original_uom_qty")
     def onchange_price_unit(self):
-        obj_decimal_precision =\
-            self.env["decimal.precision"]
-        precision =\
-            obj_decimal_precision.precision_get(
-                "Product Unit of Measure")
+        obj_decimal_precision = self.env["decimal.precision"]
+        precision = obj_decimal_precision.precision_get("Product Unit of Measure")
         if self.product_id:
-            if self.order_id.partner_id and \
-                    float_is_zero(self.price_unit, precision_digits=precision):
+            if self.order_id.partner_id and float_is_zero(
+                self.price_unit, precision_digits=precision
+            ):
                 price = self.pricelist_id.price_get(
-                    prod_id=self.product_id.id,
-                    qty=self.original_uom_qty or 1.0
+                    prod_id=self.product_id.id, qty=self.original_uom_qty or 1.0
                 )[self.pricelist_id.id]
                 self.price_unit = price
 
     @api.multi
-    @api.onchange(
-        "product_id"
-    )
+    @api.onchange("product_id")
     def onchange_name(self):
         if self.product_id:
             name = self.product_id.name
             if self.product_id.code:
-                name = "[%s] %s" % (name, self.product_id.code)
+                name = "[{}] {}".format(name, self.product_id.code)
             if self.product_id.description_sale:
                 name += "\n" + self.product_id.description_sale
             self.name = name
@@ -247,47 +238,51 @@ class SaleOrderBlanketLine(models.Model):
         "product_uom",
     )
     def _compute_quantities(self):
-        for line in self:
-            sale_lines = line.sale_lines
+        for document in self:
+            sale_lines = document.sale_lines
             ordered_uom_qty = 0.0
             invoiced_uom_qty = 0.0
             delivered_uom_qty = 0.0
-            for l in sale_lines:
+            for line in sale_lines:
                 if (
-                    l.order_id.state != "cancel" and
-                    l.product_id == line.product_id
+                    line.order_id.state != "cancel"
+                    and line.product_id == document.product_id
                 ):
-                    ordered_uom_qty += l.product_uom._compute_qty(
-                        line.product_uom, l.product_uom_qty)
-                    if l.invoice_lines:
-                        for inv in l.invoice_lines.filtered(
+                    ordered_uom_qty += line.product_uom._compute_qty(
+                        document.product_uom, line.product_uom_qty
+                    )
+                    if line.invoice_lines:
+                        for inv in line.invoice_lines.filtered(
                             lambda r: r.invoice_id.state != "cancel"
                         ):
                             invoiced_uom_qty += inv.uos_id._compute_qty(
-                                line.product_uom, inv.quantity)
-                    if l.procurement_ids:
-                        for proc in l.procurement_ids:
+                                document.product_uom, inv.quantity
+                            )
+                    if line.procurement_ids:
+                        for proc in line.procurement_ids:
                             for move in proc.move_ids.filtered(
                                 lambda r: r.state != "cancel"
                             ):
-                                delivered_uom_qty +=\
-                                    move.product_uom._compute_qty(
-                                        line.product_uom, move.product_uom_qty)
-            line.ordered_uom_qty = ordered_uom_qty
-            line.invoiced_uom_qty = invoiced_uom_qty
-            line.delivered_uom_qty = delivered_uom_qty
-            line.remaining_uom_qty = line.original_uom_qty - \
-                line.ordered_uom_qty
-            line.remaining_qty = line.product_uom._compute_qty(
-                line.product_id.uom_id, line.remaining_uom_qty)
+                                delivered_uom_qty += move.product_uom._compute_qty(
+                                    document.product_uom, move.product_uom_qty
+                                )
+            document.ordered_uom_qty = ordered_uom_qty
+            document.invoiced_uom_qty = invoiced_uom_qty
+            document.delivered_uom_qty = delivered_uom_qty
+            document.remaining_uom_qty = (
+                document.original_uom_qty - document.ordered_uom_qty
+            )
+            document.remaining_qty = document.product_uom._compute_qty(
+                document.product_id.uom_id, document.remaining_uom_qty
+            )
 
     @api.multi
     def _validate(self):
         try:
             for line in self:
-                assert line.price_unit > 0.0, \
-                    _("Price must be greater than zero")
-                assert line.original_uom_qty > 0.0, \
-                    _("Quantity must be greater than zero")
+                assert line.price_unit > 0.0, _("Price must be greater than zero")
+                assert line.original_uom_qty > 0.0, _(
+                    "Quantity must be greater than zero"
+                )
         except AssertionError as e:
             raise UserError(e)

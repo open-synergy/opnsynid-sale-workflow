@@ -8,4 +8,4 @@ from . import (
     sale_order_blanket,
     sale_order_type,
     sale_orders,
-    )
+)

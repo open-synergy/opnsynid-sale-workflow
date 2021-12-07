@@ -1,21 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <openerp>
     <data>
         <record id="sale_order_type_view_form" model="ir.ui.view">
             <field name="name">sale.order.type.blanket.orders</field>
             <field name="model">sale.order.type</field>
-            <field name="inherit_id" ref="sale_order_type.sot_sale_order_type_form_view"/>
+            <field
+                name="inherit_id"
+                ref="sale_order_type.sot_sale_order_type_form_view"
+            />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='sequence_id']" position="after">
-                    <field name="blanket_sequence_id"/>
+                    <field name="blanket_sequence_id" />
                 </xpath>
                 <xpath expr="/form/sheet/group[last()]" position="after">
-                    <group name="grp_policy_sale_order_blanket" string="Blanket Orders Workflow Button Policy" colspan="4" col="2" groups="base.group_system">
-                        <field name="blanket_confirm_group_ids" widget="many2many_tags"/>
-                        <field name="blanket_open_group_ids" widget="many2many_tags"/>
-                        <field name="blanket_done_group_ids" widget="many2many_tags"/>
-                        <field name="blanket_cancel_group_ids" widget="many2many_tags"/>
-                        <field name="blanket_restart_group_ids" widget="many2many_tags"/>
+                    <group
+                        name="grp_policy_sale_order_blanket"
+                        string="Blanket Orders Workflow Button Policy"
+                        colspan="4"
+                        col="2"
+                        groups="base.group_system"
+                    >
+                        <field
+                            name="blanket_confirm_group_ids"
+                            widget="many2many_tags"
+                        />
+                        <field name="blanket_open_group_ids" widget="many2many_tags" />
+                        <field name="blanket_done_group_ids" widget="many2many_tags" />
+                        <field
+                            name="blanket_cancel_group_ids"
+                            widget="many2many_tags"
+                        />
+                        <field
+                            name="blanket_restart_group_ids"
+                            widget="many2many_tags"
+                        />
                     </group>
                 </xpath>
             </field>

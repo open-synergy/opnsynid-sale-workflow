@@ -6,8 +6,8 @@
 {
     "name": "Required Packaging on Sale Order Line",
     "version": "8.0.1.0.0",
-    "author": "OpenSynergy Indonesia",
-    "website": "https://opensynergy-indonesia.com",
+    "website": "https://simetri-sinergi.id",
+    "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
     "depends": [
         "sale_stock",

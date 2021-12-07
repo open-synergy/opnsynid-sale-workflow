@@ -2,7 +2,7 @@
 # Copyright 2017 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, api, fields
+from openerp import api, fields, models
 
 
 class SaleOrder(models.Model):
@@ -17,8 +17,7 @@ class SaleOrder(models.Model):
         for sale_order in self:
             order_type = sale_order.type_id
             price_change_ok = True
-            if order_type and \
-                    order_type.limit_price_change:
+            if order_type and order_type.limit_price_change:
                 for group in order_type.price_change_group_ids:
                     if user in group.users:
                         price_change_ok = True

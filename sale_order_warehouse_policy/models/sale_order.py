@@ -2,25 +2,21 @@
 # © 2016 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from openerp import models, fields, api
+from openerp import api, fields, models
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    @api.depends(
-        "type_id",
-        "type_id.allowed_warehouse_ids")
+    @api.depends("type_id", "type_id.allowed_warehouse_ids")
     def _compute_allowed_warehouse_ids(self):
         obj_wh = self.env["stock.warehouse"]
         for so in self:
             if so.type_id.limit_warehouse_selection:
-                so.allowed_warehouse_ids = \
-                    so.type_id.allowed_warehouse_ids
+                so.allowed_warehouse_ids = so.type_id.allowed_warehouse_ids
             else:
                 criteria = []
-                so.allowed_warehouse_ids = \
-                    obj_wh.search(criteria)
+                so.allowed_warehouse_ids = obj_wh.search(criteria)
 
     allowed_warehouse_ids = fields.Many2many(
         string="Allowed Warehouse",
