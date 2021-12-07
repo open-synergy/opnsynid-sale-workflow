@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 OpenSynergy Indonesia
+     Copyright 2021 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<openerp>
+<data>
+<record id="canvas_type_view_search" model="ir.ui.view">
+    <field name="name">canvas.type.search</field>
+    <field name="model">canvas.type</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="code" />
+            <field name="name" />
+        </search>
+    </field>
+</record>
+
+<record id="canvas_type_view_tree" model="ir.ui.view">
+    <field name="name">canvas.type.tree</field>
+    <field name="model">canvas.type</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="code" />
+            <field name="name" />
+        </tree>
+    </field>
+</record>
+
+<record id="canvas_type_view_form" model="ir.ui.view">
+    <field name="name">canvas.type.form</field>
+    <field name="model">canvas.type</field>
+    <field name="arch" type="xml">
+        <form>
+            <header />
+            <sheet>
+                <div
+                            class="oe_right oe_button_box"
+                            style="width: 300px;"
+                            name="buttons"
+                        />
+                <group name="group_1" colspan="4" col="2">
+                    <field name="code" />
+                    <field name="name" />
+                    <field name="active" />
+                    <field name="sequence_id" domain="[('code','=','canvas')]" />
+                </group>
+                <notebook>
+                    <page name="page_allowed_product" string="Allowed Products">
+                        <group
+                                    name="group_allowed_product_categ"
+                                    string="Allowed Product Categories"
+                                    colspan="4"
+                                    col="2"
+                                >
+                            <field name="allowed_product_categ_ids" nolabel="1" />
+                        </group>
+                        <group
+                                    name="group_allowed_product"
+                                    string="Allowed Products"
+                                    colspan="4"
+                                    col="2"
+                                >
+                            <field name="allowed_product_ids" nolabel="1" />
+                        </group>
+                    </page>
+                    <page name="page_allowed_pricelist" string="Allowed Pricelist">
+                        <group
+                                    name="group_allowed_pricelist"
+                                    string="Allowed Pricelist"
+                                    colspan="4"
+                                    col="2"
+                                >
+                            <field name="allowed_pricelist_ids" nolabel="1" />
+                        </group>
+                    </page>
+                    <page name="page_allowed_salesperson" string="Allowed Salesperson">
+                        <group
+                                    name="group_allowed_salesperson"
+                                    string="Allowed Salesperson"
+                                    colspan="4"
+                                    col="2"
+                                >
+                            <field name="allowed_salesperson_ids" nolabel="1" />
+                        </group>
+                    </page>
+                    <page name="page_allowed_route" string="Allowed Routes">
+                        <group
+                                    name="group_allowed_route"
+                                    string="Allowed Routes"
+                                    colspan="4"
+                                    col="2"
+                                >
+                            <field name="allowed_route_ids" nolabel="1" />
+                        </group>
+                    </page>
+                    <page name="note" string="Note">
+                        <field name="note" />
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+<record id="canvas_type_action" model="ir.actions.act_window">
+    <field name="name">Canvas Types</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">canvas.type</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+            id="canvas_type_menu"
+            name="Canvas Types"
+            parent="canvas_order_configuration_menu"
+            action="canvas_type_action"
+            sequence="1"
+        />
+</data>
+</openerp>
