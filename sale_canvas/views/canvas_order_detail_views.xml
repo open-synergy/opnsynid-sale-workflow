@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 OpenSynergy Indonesia
+     Copyright 2021 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<openerp>
+<data>
+<record id="canvas_order_detail_view_tree" model="ir.ui.view">
+    <field name="name">canvas.order.detail.tree</field>
+    <field name="model">canvas.order_detail</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="product_id" />
+            <field name="quantity" />
+            <field name="price_unit" />
+            <field name="subtotal_before_tax" />
+            <field name="subtotal_after_tax" />
+        </tree>
+    </field>
+</record>
+
+<record id="canvas_order_detail_view_form" model="ir.ui.view">
+    <field name="name">canvas.order.detail.form</field>
+    <field name="model">canvas.order_detail</field>
+    <field name="arch" type="xml">
+        <form>
+            <group name="group_1" colspan="4" col="2">
+                <group name="group_1_1" colspan="1" col="2">
+                    <field
+                                name="allowed_uom_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                    <field
+                                name="product_id"
+                                domain="['|',('id','in',parent.allowed_product_ids[0][2]),('categ_id','in',parent.allowed_product_categ_ids[0][2])]"
+                            />
+                    <label for="quantity" />
+                    <div>
+                        <field name="quantity" class="oe_inline" />
+                        <field
+                                    name="uom_id"
+                                    domain="[('id','in',allowed_uom_ids[0][2])]"
+                                    groups="product.group_uom"
+                                    class="oe_inline"
+                                />
+                    </div>
+                </group>
+                <group name="group_1_2">
+                    <field name="pricelist_id" />
+                    <field name="price_unit" />
+                    <field name="price_before_tax" />
+                    <field name="tax_ids" widget="many2many_tags" />
+                    <field name="price_after_tax" />
+                    <field name="subtotal_before_tax" />
+                    <field name="subtotal_after_tax" />
+                </group>
+            </group>
+            <notebook colspan="4">
+                <page name="page_quantity" string="Quantity">
+                    <group name="page_quantity_1" colspan="4" col="2">
+                        <field name="qty_to_deliver" />
+                        <field name="qty_delivered" />
+                        <field name="qty_to_receive" />
+                        <field name="qty_received" />
+                        <field name="qty_missing" />
+                        <field name="qty_waste" />
+                        <field name="qty_sold" />
+                    </group>
+                </page>
+                <page name="page_outbound_move" string="Outbound Moves">
+                    <group name="page_outbound_move_1" colspan="4" col="2">
+                        <field name="outbound_stock_move_ids" nolabel="1" />
+                    </group>
+                </page>
+                <page name="page_inbound_move" string="Inbound Moves">
+                    <group name="page_inbound_move_1" colspan="4" col="2">
+                        <field name="inbound_stock_move_ids" nolabel="1" />
+                    </group>
+                </page>
+                <page name="page_missing_move" string="Missing Moves">
+                    <group name="page_missing_move_1" colspan="4" col="2">
+                        <field name="missing_stock_move_ids" nolabel="1" />
+                    </group>
+                </page>
+                <page name="page_waste_move" string="Waste Moves">
+                    <group name="page_waste_move_1" colspan="4" col="2">
+                        <field name="waste_stock_move_ids" nolabel="1" />
+                    </group>
+                </page>
+                <page name="page_order_line" string="Order Lines">
+                    <group name="page_order_line_1" colspan="4" col="2">
+                        <field name="order_line_ids" nolabel="1" />
+                    </group>
+                </page>
+            </notebook>
+        </form>
+    </field>
+</record>
+</data>
+</openerp>

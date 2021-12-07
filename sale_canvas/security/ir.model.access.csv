@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+canvas_type_user,canvas.type - user,model_canvas_type,base.group_user,1,1,1,1
+canvas_type_all,canvas.type – all,model_canvas_type,,1,0,0,0
+canvas_route_user,canvas.route - user,model_canvas_route,base.group_user,1,1,1,1
+canvas_route_all,canvas.route – all,model_canvas_route,,1,0,0,0
+canvas_order_user,canvas.order - user,model_canvas_order,base.group_user,1,1,1,1
+canvas_order_all,canvas.order – all,model_canvas_order,,1,0,0,0
+canvas_order_detail_user,canvas.order_detail - user,model_canvas_order_detail,base.group_user,1,1,1,1
+canvas_order_detail_all,canvas.order_detail – all,model_canvas_order_detail,,1,0,0,0

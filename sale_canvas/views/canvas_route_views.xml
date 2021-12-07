@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 OpenSynergy Indonesia
+     Copyright 2021 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<openerp>
+<data>
+<record id="canvas_route_view_search" model="ir.ui.view">
+    <field name="name">canvas.route.search</field>
+    <field name="model">canvas.route</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="code" />
+            <field name="name" />
+        </search>
+    </field>
+</record>
+
+<record id="canvas_route_view_tree" model="ir.ui.view">
+    <field name="name">canvas.route.tree</field>
+    <field name="model">canvas.route</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="code" />
+            <field name="name" />
+        </tree>
+    </field>
+</record>
+
+<record id="canvas_route_view_form" model="ir.ui.view">
+    <field name="name">canvas.route.form</field>
+    <field name="model">canvas.route</field>
+    <field name="arch" type="xml">
+        <form>
+            <header />
+            <sheet>
+                <div
+                            class="oe_right oe_button_box"
+                            style="width: 300px;"
+                            name="buttons"
+                        />
+                <group name="group_1" colspan="4" col="2">
+                    <field name="code" />
+                    <field name="name" />
+                    <field name="active" />
+                </group>
+                <notebook>
+                    <page name="page_route" string="Routes">
+                        <group name="group_route_root" colspan="4" col="2">
+                            <group name="group_1" colspan="1" col="2">
+                                <field name="inbound_route_id" />
+                                <field name="outbound_route_id" />
+                                <field name="sale_line_route_id" />
+                            </group>
+                        </group>
+                    </page>
+                    <page name="page_warehouse" string="Warehouses">
+                        <group name="group_warehouse_root" colspan="4" col="2">
+                            <group name="group_1" colspan="1" col="2">
+                                <field name="inbound_warehouse_id" />
+                                <field name="outbound_warehouse_id" />
+                            </group>
+                        </group>
+                    </page>
+                    <page name="workflow_policy" string="Workflow Policy">
+                        <group name="workflow_policy_1" colspan="4" col="2">
+                            <field
+                                        name="canvas_confirm_grp_ids"
+                                        widget="many2many_tags"
+                                    />
+                            <field name="canvas_done_grp_ids" widget="many2many_tags" />
+                            <field
+                                        name="canvas_cancel_grp_ids"
+                                        widget="many2many_tags"
+                                    />
+                            <field
+                                        name="canvas_restart_validation_grp_ids"
+                                        widget="many2many_tags"
+                                    />
+                            <field
+                                        name="canvas_restart_grp_ids"
+                                        widget="many2many_tags"
+                                    />
+                        </group>
+                    </page>
+                    <page name="note" string="Note">
+                        <field name="note" />
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+<record id="canvas_route_action" model="ir.actions.act_window">
+    <field name="name">Canvas Routes</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">canvas.route</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+            id="canvas_route_menu"
+            name="Canvas Routes"
+            parent="canvas_order_configuration_menu"
+            action="canvas_route_action"
+            sequence="2"
+        />
+</data>
+</openerp>
